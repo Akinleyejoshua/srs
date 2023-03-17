@@ -7,7 +7,7 @@ const options = {
 }
 mongoose.set("strictQuery", false);
 
-const mongoURI = process.env.MONGO_URI || "mongodb+srv://srs:srs@cluster0.93qfkgc.mongodb.net/?retryWrites=true&w=majority"
+const mongoURI = "mongodb+srv://srs:srs@cluster0.93qfkgc.mongodb.net/?retryWrites=true&w=majority"
 
 const connect = async () => {
     await mongoose.connect(mongoURI, options).then(res => {
