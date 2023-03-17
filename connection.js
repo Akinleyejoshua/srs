@@ -7,10 +7,10 @@ const options = {
 }
 mongoose.set("strictQuery", false);
 
-const mongoURI = "mongodb+srv://srs:srs@cluster0.7zgysaf.mongodb.net/?retryWrites=true&w=majority"
+const MONGO_URI = "mongodb+srv://srs:srs@cluster0.7zgysaf.mongodb.net/?retryWrites=true&w=majority"
 
 const connect = async () => {
-    await mongoose.connect(mongoURI, options).then(res => {
+    await mongoose.connect(MONGO_URI, options).then(res => {
         if (res) return console.log("Database Connected")
         console.log("MongoDB Database Connection Failed")
     }).catch(err => {
