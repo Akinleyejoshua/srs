@@ -18,9 +18,14 @@ async function updateUserData(req, res) {
 
     const updateUser = await User.updateOne(body);
 
-    if (updateUser) return res.status(201).json({
+    if (updateUser.modifiedCount > 0) return res.status(201).json({
         success: true,
         msg: "updated"
+    })
+
+    return res.status(201).json({
+        success: false,
+        msg: "error"
     })
 }
 module.exports = {

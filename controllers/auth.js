@@ -2,6 +2,8 @@ require("dotenv").config();
 const User = require("../models/User");
 const tokenGenerator = require("../utils/jwt");
 const bcrypt = require("bcrypt");
+// const mail = require("../utils/nodemailer");
+// const signinEmail = require("../email-templates/signin");
 
 async function signin(req, res) {
     const { email, password } = req.body;
@@ -11,13 +13,16 @@ async function signin(req, res) {
         msg: "empty-values"
     });
 
-    const UserExist = await User.findOne({ email: email, }).lean();
+    const userExist = await User.findOne({ email: email, }).lean();
 
-    if (UserExist) {
-        const passwordMatch = await bcrypt.compare(password, UserExist.password);
+    if (userExist) {
+        const passwordMatch = await bcrypt.compare(password, userExist.password);
 
         if (passwordMatch) {
-            const token = await tokenGenerator({ id: UserExist._id }, process.env.TOKEN_SECRET_KEY, "24h");
+            const token = await tokenGenerator({ id: userExist._id }, process.env.TOKEN_SECRET_KEY, "24h");
+            
+            // const html = signinEmail(email)
+            // mail("no-reply", email, "Account Login", html)
 
             return res.status(200).json({
                 success: true,
@@ -37,11 +42,11 @@ async function signin(req, res) {
     } else {
         return res.status(200).json({
             success: false,
-            msg: "User-not-found",
+            msg: "user-not-found",
         })
     }
 
-    res.send("")
+    return res.send("")
 
 }
 
@@ -58,13 +63,13 @@ async function signup(req, res) {
         msg: "empty-values"
     });
 
-    const UserExist = await User.findOne({ email: email, number: number }).lean();
+    const userExist = await User.findOne({ email: email, number: number }).lean();
 
-    if (UserExist) {
+    if (userExist) {
 
         return res.status(200).json({
             success: false,
-            msg: "User-exist"
+            msg: "user-exist"
         });
 
     } else {
@@ -74,20 +79,33 @@ async function signup(req, res) {
         if (await newUser.save()) {
             return res.status(200).json({
                 success: true,
-                msg: "User-created"
+                msg: "user-created"
             });
 
         } else {
             return res.status(200).json({
                 success: false,
-                msg: "User-error"
+                msg: "user-error"
             });
 
         }
     }
 }
 
+async function changePassword(req, res) {
+    const {id, password} = req.body;
+    const hash = bcrypt.hash(password, 10)
+    const newPassword = await User.updateOne({_id: id, password: hash});
+    if (newPassword){
+        return res.status(201).json({
+            success: true,
+            msg: "password-updated"
+        })
+    }   
+}
+
 module.exports = {
     signin,
-    signup
+    signup,
+    changePassword,
 }
