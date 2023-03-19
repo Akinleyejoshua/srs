@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const secret = process.env.TOKEN_SECRET_KEY
+const secret = process.env.TOKEN_SECRET_KEY || "0123456789"
 
 module.exports = async function authToken(req, res, next) {
     const authHeader = req.headers["authorization"];
@@ -11,7 +11,7 @@ module.exports = async function authToken(req, res, next) {
     } else {
         jwt.verify(token, secret, (err, user) => {
             try {
-                
+
                 if (err) return res.status(200).send("token-expired");
                 next();
 
