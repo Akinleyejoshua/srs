@@ -11,6 +11,7 @@ module.exports = async function authToken(req, res, next) {
     } else {
         jwt.verify(token, secret, (err, user) => {
             try {
+                
                 if (err) return res.status(200).send("token-expired");
                 next();
 
