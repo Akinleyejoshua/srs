@@ -2,13 +2,21 @@ const User = require("../models/User");
 
 async function getUserData(req, res) {
     const { id } = req.body;
-    const userExist = await User.findOne({ _id: id }).lean();
-    if (userExist) {
-        userExist.password = "";
-        return res.status(200).send(userExist);
-    } else {
-        return res.status(200).send("user-not-found");
+    try {
+        const userExist = await User.findOne({ _id: id }).lean();
+        if (userExist) {
+            userExist.password = "";
+            return res.status(200).send(userExist);
+        } else {
+            return res.status(200).send("not-found");
+        }
+    } catch (err) {
+        return res.status(201).json({
+            success: false,
+            msg: "invalid-id"
+        })
     }
+
 
 }
 
@@ -28,7 +36,20 @@ async function updateUserData(req, res) {
         msg: "error"
     })
 }
+
+async function getAllUser(req, res) {
+    const users = await User.find().lean();
+
+    if (users) {
+        users.map(item => item.password = "");
+        return res.status(200).send(users);
+    } else {
+        return res.status(200).send("not-found");
+    }
+}
+
 module.exports = {
     getUserData,
-    updateUserData
+    updateUserData,
+    getAllUser
 }

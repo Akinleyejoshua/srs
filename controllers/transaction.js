@@ -3,8 +3,10 @@ const Transaction = require("../models/Transaction");
 async function getTransactions(req, res) {
     const { id } = req.body;
     const transactions = await Transaction.find({ id: id }).lean();
-    if (transactions) {
+    if (transactions.length > 0) {
         return res.status(200).send(transactions);
+    } else {
+        return res.status(200).send("not-found");
     }
 }
 
@@ -42,8 +44,18 @@ async function deleteTransaction(req, res) {
     }
 }
 
+async function getAllTransactions(req, res){
+    const transactions = await Transaction.find().lean();
+    if (transactions.length > 0) {
+        return res.status(200).send(transactions);
+    } else {
+        return res.status(200).send("not-found");
+    }
+}
+
 module.exports = {
     getTransactions,
     saveTransaction,
-    deleteTransaction
+    deleteTransaction,
+    getAllTransactions
 }
